@@ -10,29 +10,49 @@
             padding: 0;
             height: 100%;
             width: 100%;
-            overflow: hidden; /* Estää rullauksen animaation aikana */
-            background-color: #ffffff; /* Alkuperäinen valkoinen tausta */
+            overflow: hidden; /* Estää rullauksen */
+            background-color: #ffffff; /* Sivu alkaa valkoisena */
             font-family: 'Helvetica Neue', Arial, sans-serif;
-            color: #000000; /* Oletustekstin väri, vaihtuu myöhemmin */
         }
 
-        /* Piilotetaan varsinainen sisältö aluksi */
+        /* Keskellä oleva ympyrä, joka laajenee */
+        #expanding-circle {
+            position: fixed; 
+            top: 50%;
+            left: 50%;
+            width: 20px; 
+            height: 20px;
+            /* KORJAUS: Ympyrä on musta, jotta se näkyy valkoisella taustalla */
+            background-color: #000000; 
+            border-radius: 50%;
+            /* Asetetaan ympyrä taustalle (mutta valkoisen bodyn päälle) */
+            z-index: 1; 
+            
+            /* Animaatioasetus: käytetään 'transform' leveyden/korkeuden sijaan, se on sulavampi */
+            transform: translate(-50%, -50%) scale(1); /* Alkuskaala */
+            transition: transform 1.5s cubic-bezier(0.65, 0.05, 0.36, 1);
+        }
+
+        /* Kun 'animate' luokka lisätään bodyyn, skaalataan ympyrä peittämään näyttö */
+        body.animate #expanding-circle {
+            transform: translate(-50%, -50%) scale(200); /* Riittävän suuri skaalaus peittämään kaikki */
+        }
+
+        /* Sivun varsinainen sisältö */
         .page-content {
-            position: relative;
+            position: relative; 
+            z-index: 2; /* Sisältö on ympyrän (z-index: 1) päällä */
             width: 100%;
             height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0; /* Piilotettu aluksi */
-            transition: opacity 1s ease 1.5s; /* ilmestyy 1.5s viiveellä */
-            color: #ffffff; /* Tekstin väri mustalla taustalla */
+            color: #ffffff; /* Teksti on valkoista */
         }
 
+        /* Tekstielementit */
         .top-left-text, .bottom-right-text {
             position: fixed;
             opacity: 0; /* Piilotettu aluksi */
-            transition: opacity 1s ease 2s; /* Ilmestyvät 2s viiveellä, jotta ympyrä ehtii ensin */
+            /* Animaatio: ilmestyy 1s viiveellä, kesto 1s */
+            transition: opacity 1s ease 1s; 
         }
 
         .top-left-text {
@@ -48,37 +68,7 @@
             font-size: 14px;
         }
 
-        /* Keskellä oleva ympyrä */
-        #expanding-circle {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 20px; /* Alkuperäinen koko */
-            height: 20px;
-            background-color: #ffffff; /* Valkoinen ympyrä */
-            border-radius: 50%;
-            transform: translate(-50%, -50%); /* Keskittää ympyrän */
-            z-index: 1000;
-            opacity: 1; /* Aluksi näkyvä */
-            /* Animaatio: laajenee 1.5s */
-            transition: transform 1.5s cubic-bezier(0.65, 0.05, 0.36, 1),
-                        width 1.5s cubic-bezier(0.65, 0.05, 0.36, 1),
-                        height 1.5s cubic-bezier(0.65, 0.05, 0.36, 1);
-        }
-
-        /* Kun 'animate' luokka lisätään bodyyn, ympyrä laajenee */
-        body.animate #expanding-circle {
-            width: 300vmax; /* Takaa, että ympyrä täyttää koko näytön (vmax = viewport max dimension) */
-            height: 300vmax;
-        }
-
-        /* Kun 'animate' luokka on aktiivinen, vaihdetaan taustan väriä */
-        body.animate {
-            background-color: #000000; /* Musta tausta, kun ympyrä on laajentunut */
-            transition: background-color 0.8s ease 1s; /* Viiveellä, jotta ympyrä ehtii peittää ensin */
-        }
-
-        /* Kun 'content-visible' luokka lisätään, sisältö tulee näkyviin */
+        /* Kun 'content-visible' luokka lisätään, tekstit tulevat näkyviin */
         body.content-visible .top-left-text,
         body.content-visible .bottom-right-text {
             opacity: 1;
@@ -96,15 +86,14 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Lisätään 'animate' luokka bodylle heti DOMin latauduttua
+            // 1. Käynnistä ympyrän laajeneminen heti
             document.body.classList.add('animate');
 
-            // Ajastetaan 'content-visible' luokan lisäys sen jälkeen, kun animaatio on valmis
-            // Ympyrän laajeneminen kestää 1.5s, taustan vaihto 0.8s (viive 1s).
-            // Annetaan hieman lisäaikaa, esim. 2.5s yhteensä.
+            // 2. Käynnistä tekstien ilmestyminen 1000ms (1s) kuluttua
+            // (Tämä vastaa CSS:n 'transition-delay' -aikaa)
             setTimeout(function() {
                 document.body.classList.add('content-visible');
-            }, 2500); // 2500ms = 2.5 sekuntia
+            }, 1000); // Ajastus alkaa samaan aikaan kuin CSS:n viive
         });
     </script>
 
