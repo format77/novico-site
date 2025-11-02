@@ -5,90 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yritys Oy</title>
     <style>
-        /* Perusasetukset ja fontti */
         html, body {
             margin: 0;
             padding: 0;
             height: 100%;
             width: 100%;
-            overflow: hidden; /* Estää selaimen rullauksen animaation aikana */
-            background-color: #ffffff; /* Sivun taustaväri */
-            color: #000000; /* Sivun tekstin väri */
+            overflow: hidden; /* Estää rullauksen animaation aikana */
+            background-color: #ffffff; /* Alkuperäinen valkoinen tausta */
             font-family: 'Helvetica Neue', Arial, sans-serif;
+            color: #000000; /* Oletustekstin väri, vaihtuu myöhemmin */
         }
 
-        /* ----- Animaation latausruutu ----- */
-        
-        #loader {
-            position: fixed;
-            top: 0;
-            left: 0;
+        /* Piilotetaan varsinainen sisältö aluksi */
+        .page-content {
+            position: relative;
             width: 100%;
             height: 100%;
-            z-index: 1000;
-            pointer-events: none; /* Sallii klikkaukset sisällön läpi, kun animaatio on valmis */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0; /* Piilotettu aluksi */
+            transition: opacity 1s ease 1.5s; /* ilmestyy 1.5s viiveellä */
+            color: #ffffff; /* Tekstin väri mustalla taustalla */
         }
 
-        /* Neljä mustaa suorakulmiota (neljännestä) */
-        .loader-quadrant {
-            position: absolute;
-            width: 50%;
-            height: 50%;
-            background: #000000;
-            /* Animaation siirtymä: kestää 1 sekunnin ja käyttää pehmeää "ease-in-out" -hidastusta */
-            transition: transform 1s cubic-bezier(0.7, 0, 0.3, 1);
-        }
-
-        /* Asetellaan neljännekset paikoilleen ja määritellään niiden pyörähdyspiste */
-        .q1 { top: 0;   left: 0;   transform-origin: bottom right; }
-        .q2 { top: 0;   left: 50%; transform-origin: bottom left; }
-        .q3 { top: 50%; left: 0;   transform-origin: top right; }
-        .q4 { top: 50%; left: 50%; transform-origin: top left; }
-
-        /* Klikattava ympyrä */
-        #loader-trigger {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 60px;
-            height: 60px;
-            border: 2px solid white;
-            border-radius: 50%; /* Tekee neliöstä ympyrän */
-            transform: translate(-50%, -50%); /* Keskittää ympyrän tarkasti */
-            cursor: pointer;
-            z-index: 1001;
-            pointer-events: all; /* Varmistaa, että tätä voi klikata */
-            transition: opacity 0.5s ease;
-        }
-
-        /* ----- Animaation "LADATTU"-tila ----- */
-        /* Nämä säännöt aktivoituvat, kun JavaScript lisää 'loaded'-luokan body-elementtiin */
-
-        body.loaded #loader-trigger {
-            opacity: 0; /* Häivytetään ympyrä */
-            pointer-events: none; /* Ei voi enää klikata */
-        }
-
-        /* Pyöritetään ja skaalataan neljännekset pois näkyvistä */
-        body.loaded .q1 { transform: rotate(-90deg) scale(2); }
-        body.loaded .q2 { transform: rotate(90deg) scale(2); }
-        body.loaded .q3 { transform: rotate(90deg) scale(2); }
-        body.loaded .q4 { transform: rotate(-90deg) scale(2); }
-
-        body.loaded {
-            overflow: auto; /* Palautetaan sivun rullaus, kun animaatio on ohi */
-        }
-
-
-        /* ----- Sivun varsinainen sisältö (sinun toiveesi) ----- */
-
-        .page-content {
-            padding: 40px;
-            box-sizing: border-box; /* Varmistaa, että padding ei riko asettelua */
+        .top-left-text, .bottom-right-text {
+            position: fixed;
+            opacity: 0; /* Piilotettu aluksi */
+            transition: opacity 1s ease 2s; /* Ilmestyvät 2s viiveellä, jotta ympyrä ehtii ensin */
         }
 
         .top-left-text {
-            position: fixed;
             top: 40px;
             left: 40px;
             font-size: 24px;
@@ -96,40 +43,70 @@
         }
 
         .bottom-right-text {
-            position: fixed;
             bottom: 40px;
             right: 40px;
-            font-size: 14px; /* Pienempi fontti, kuten pyysit */
+            font-size: 14px;
+        }
+
+        /* Keskellä oleva ympyrä */
+        #expanding-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px; /* Alkuperäinen koko */
+            height: 20px;
+            background-color: #ffffff; /* Valkoinen ympyrä */
+            border-radius: 50%;
+            transform: translate(-50%, -50%); /* Keskittää ympyrän */
+            z-index: 1000;
+            opacity: 1; /* Aluksi näkyvä */
+            /* Animaatio: laajenee 1.5s */
+            transition: transform 1.5s cubic-bezier(0.65, 0.05, 0.36, 1),
+                        width 1.5s cubic-bezier(0.65, 0.05, 0.36, 1),
+                        height 1.5s cubic-bezier(0.65, 0.05, 0.36, 1);
+        }
+
+        /* Kun 'animate' luokka lisätään bodyyn, ympyrä laajenee */
+        body.animate #expanding-circle {
+            width: 300vmax; /* Takaa, että ympyrä täyttää koko näytön (vmax = viewport max dimension) */
+            height: 300vmax;
+        }
+
+        /* Kun 'animate' luokka on aktiivinen, vaihdetaan taustan väriä */
+        body.animate {
+            background-color: #000000; /* Musta tausta, kun ympyrä on laajentunut */
+            transition: background-color 0.8s ease 1s; /* Viiveellä, jotta ympyrä ehtii peittää ensin */
+        }
+
+        /* Kun 'content-visible' luokka lisätään, sisältö tulee näkyviin */
+        body.content-visible .top-left-text,
+        body.content-visible .bottom-right-text {
+            opacity: 1;
         }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <div id="loader-trigger"></div>
-        <div class="loader-quadrant q1"></div>
-        <div class="loader-quadrant q2"></div>
-        <div class="loader-quadrant q3"></div>
-        <div class="loader-quadrant q4"></div>
-    </div>
+    <div id="expanding-circle"></div>
 
     <div class="page-content">
         <div class="top-left-text">yritys oy</div>
-        <div class="bottom-right-text">sivustoa päivitetään</div>
-
-        </div>
+        <div class="bottom-right-text">yhteystiedot</div>
+    </div>
 
     <script>
-        // Etsitään klikattava ympyrä
-        var trigger = document.getElementById('loader-trigger');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lisätään 'animate' luokka bodylle heti DOMin latauduttua
+            document.body.classList.add('animate');
 
-        // Lisätään sille klikkaustapahtuma
-        trigger.addEventListener('click', function() {
-            // Kun klikataan, lisätään 'loaded'-luokka koko body-elementille
-            document.body.classList.add('loaded');
+            // Ajastetaan 'content-visible' luokan lisäys sen jälkeen, kun animaatio on valmis
+            // Ympyrän laajeneminen kestää 1.5s, taustan vaihto 0.8s (viive 1s).
+            // Annetaan hieman lisäaikaa, esim. 2.5s yhteensä.
+            setTimeout(function() {
+                document.body.classList.add('content-visible');
+            }, 2500); // 2500ms = 2.5 sekuntia
         });
     </script>
 
 </body>
 </html>
-
