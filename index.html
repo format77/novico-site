@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Novico Oy</title>
 
-  <!-- Estä indeksointi ja välimuistit -->
   <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
   <meta name="googlebot" content="noindex,nofollow,noarchive,nosnippet">
   <meta name="bingbot" content="noindex,nofollow,noarchive,nosnippet">
@@ -17,9 +16,9 @@
       height: 100%;
       width: 100%;
       overflow: hidden;
-      background: #000000; /* tausta mustaksi, jotta valkoinen teksti näkyy */
+      background: #000;
       font-family: 'Segoe UI', system-ui, sans-serif;
-      color: #ffffff;
+      color: #fff;
     }
 
     #expanding-circle {
@@ -28,7 +27,7 @@
       left: 50%;
       width: 20px;
       height: 20px;
-      background: #000000;
+      background: #000;
       border-radius: 50%;
       z-index: 1;
       transform: translate(-50%, -50%) scale(1);
@@ -54,8 +53,7 @@
     .text-element {
       opacity: 0;
       transition: opacity 1s ease 1s;
-      text-transform: uppercase;
-      line-height: 1.0;
+      line-height: 1.2;
       white-space: nowrap;
     }
 
@@ -68,6 +66,7 @@
       font-weight: 900;
       padding-bottom: 2vw;
       padding-left: 2vw;
+      text-transform: uppercase;
     }
 
     .bottom-right-text {
@@ -75,29 +74,25 @@
       grid-row: 3 / 4;
       align-self: center;
       justify-self: start;
-      font-size: 2vw;
+      font-size: 0.9vw; /* yhtenäinen pienempi koko */
       font-weight: 400;
       padding-bottom: 2vw;
       padding-right: 2vw;
+      text-transform: none; /* sallii pienet ja isot kirjaimet */
+      line-height: 1.4; /* luonnollisempi riviväli */
     }
 
     body.content-visible .text-element {
       opacity: 1;
     }
 
-    /* varmistetaan että SVG näkyy oikein */
     .bottom-right-text svg text {
       fill: #ffffff;
     }
 
-    /* pieni siistys mobiilissa */
     @media (max-width: 600px) {
-      .top-left-text {
-        font-size: 15vw;
-      }
-      .bottom-right-text {
-        font-size: 3vw;
-      }
+      .top-left-text { font-size: 15vw; }
+      .bottom-right-text { font-size: 2.5vw; }
     }
   </style>
 </head>
@@ -110,13 +105,13 @@
       (3572695-2)<br>
       Syöttäjänkatu 1<br>
       40520 Jyväskylä<br><br>
-      <span class="label">Sähköposti:</span><br>
+      Sähköposti:<br>
       <svg xmlns="http://www.w3.org/2000/svg"
            width="200"
            height="20"
            role="img"
            aria-label="info@novico.fi"
-           style="display:block; margin-top:0.5em;">
+           style="display:block; margin-top:0.3em;">
         <text x="0" y="15" font-family="Segoe UI, sans-serif" font-size="14">info@novico.fi</text>
       </svg>
     </div>
@@ -125,9 +120,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       document.body.classList.add('animate');
-      setTimeout(function() {
-        document.body.classList.add('content-visible');
-      }, 1000);
+      setTimeout(() => document.body.classList.add('content-visible'), 1000);
     });
   </script>
 </body>
