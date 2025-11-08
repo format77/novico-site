@@ -11,87 +11,37 @@
 
   <style>
     html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      overflow: hidden;
-      background: #000;
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      color: #fff;
+      margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden;
+      background: #000; font-family: 'Segoe UI', system-ui, sans-serif; color: #fff;
     }
-
     #expanding-circle {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      width: 20px;
-      height: 20px;
-      background: #000;
-      border-radius: 50%;
-      z-index: 1;
-      transform: translate(-50%, -50%) scale(1);
-      transition: transform 1.5s cubic-bezier(0.65, 0.05, 0.36, 1);
+      position: fixed; top: 50%; left: 50%; width: 20px; height: 20px; background: #000;
+      border-radius: 50%; z-index: 1; transform: translate(-50%,-50%) scale(1);
+      transition: transform 1.5s cubic-bezier(0.65,0.05,0.36,1);
     }
-
-    body.animate #expanding-circle {
-      transform: translate(-50%, -50%) scale(200);
-    }
+    body.animate #expanding-circle { transform: translate(-50%,-50%) scale(200); }
 
     .page-content {
-      position: relative;
-      z-index: 2;
-      width: 100%;
-      height: 100%;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr 1fr;
-      padding: 4vw;
-      box-sizing: border-box;
+      position: relative; z-index: 2; width: 100%; height: 100%;
+      display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr 1fr;
+      padding: 4vw; box-sizing: border-box;
     }
-
-    .text-element {
-      opacity: 0;
-      transition: opacity 1s ease 1s;
-      line-height: 1.2;
-      white-space: nowrap;
-    }
-
+    .text-element { opacity: 0; transition: opacity 1s ease 1s; line-height: 1.2; white-space: nowrap; }
     .top-left-text {
-      grid-column: 1 / 2;
-      grid-row: 1 / 2;
-      align-self: end;
-      justify-self: start;
-      font-size: 10vw;
-      font-weight: 700; /* kevennetty */
-      letter-spacing: 0.2vw; /* hieman väljyyttä */
-      padding-bottom: 2vw;
-      padding-left: 2vw;
-      text-transform: uppercase;
-      transform: scaleY(1.1); /* pieni pystysuuntainen venytys */
-      transform-origin: bottom left;
+      grid-column: 1/2; grid-row: 1/2; align-self: end; justify-self: start;
+      font-size: 10vw; font-weight: 700; letter-spacing: 0.2vw;
+      padding-bottom: 2vw; padding-left: 2vw; text-transform: uppercase;
+      transform: scaleY(1.1); transform-origin: bottom left;
     }
-
     .bottom-right-text {
-      grid-column: 2 / 3;
-      grid-row: 3 / 4;
-      align-self: center;
-      justify-self: start;
-      font-size: 1.3vw; /* yhtenäinen pienempi koko */
-      font-weight: 400;
-      padding-bottom: 2vw;
-      padding-right: 2vw;
-      text-transform: none; /* sallii pienet ja isot kirjaimet */
-      line-height: 1.4; /* luonnollisempi riviväli */
+      grid-column: 2/3; grid-row: 3/4; align-self: center; justify-self: start;
+      font-size: 1.6vw; font-weight: 400; padding-bottom: 2vw; padding-right: 2vw;
+      text-transform: none; line-height: 1.4;
     }
+    body.content-visible .text-element { opacity: 1; }
 
-    body.content-visible .text-element {
-      opacity: 1;
-    }
-
-    .bottom-right-text svg text {
-      fill: #ffffff;
-    }
+    /* väli sähköpostille hallitaan tästä */
+    #email-img { display: block; margin-top: 0.15em; line-height: 1.2; }
 
     @media (max-width: 600px) {
       .top-left-text { font-size: 15vw; }
@@ -107,15 +57,33 @@
     <div class="text-element bottom-right-text">
       (3572695-2)<br>
       Syöttäjänkatu 1<br>
-      40520 Jyväskylä<br>
-      <svg xmlns="http://www.w3.org/2000/svg"
-           width="200"
-           height="30"
-           role="img"
-           aria-label="info@novico.fi"
-           style="display:block; margin-top:0.3em;">
-        <text x="0" y="15" font-family="Segoe UI, sans-serif" font-size="18">info@novico.fi</text>
-      </svg>
+      40520 Jyväskylä
+      <span id="email-img"></span>
+		<script>
+		  const parts = ["in","fo","@","no","vi","co",".","fi"];
+		  const email = parts.join("");
+
+		  // Luodaan canvas ja piirretään teksti hieman ylemmäs
+		  const c = document.createElement('canvas');
+		  const scale = window.devicePixelRatio || 1;
+		  const w = 200, h = 26; // matalampi kuva
+		  c.width = w * scale;
+		  c.height = h * scale;
+		  const ctx = c.getContext('2d');
+
+		  ctx.scale(scale, scale);
+		  ctx.fillStyle = "#ffffff";
+		  ctx.font = "20px 'Segoe UI', system-ui, sans-serif"; // isompi fontti
+		  ctx.textBaseline = "top"; // siirtää tekstin ylemmäs
+		  ctx.fillText(email, 0, 1); // pieni siirtymä ylös
+
+		  const img = new Image();
+		  img.width = w;
+		  img.height = h;
+		  img.alt = "sähköposti";
+		  img.src = c.toDataURL("image/png");
+		  document.getElementById("email-img").appendChild(img);
+		</script>
     </div>
   </div>
 
